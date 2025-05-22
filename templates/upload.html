@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files - FastAPI Compare Excel</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        nav { 
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+        nav a { 
+            margin-right: 15px; 
+            text-decoration: none; 
+            color: white; 
+            padding: 0.5em 1em;
+            border-radius: 4px;
+        }
+        nav a:hover { 
+            text-decoration: none; 
+            background-color: #555;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px auto; /* Center the form */
+            text-align: left; /* Align form elements to the left */
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }        input[type="file"],
+        input[type="text"] {
+            width: calc(100% - 22px); /* Adjust width to account for padding/border */
+            padding: 10px;
+            margin-bottom: 10px; /* Add space below each input */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        input[type="submit"] {
+            display: block; /* Make submit button a block to take full width */
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .input-group input {
+            flex-grow: 1;
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+        .input-group button {
+            margin-bottom: 0;
+            background-color: #ff4444;
+        }
+        .sheet-container {
+            margin-bottom: 20px;
+        }
+        input[type="submit"]:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/upload">Upload Files</a>
+        <a href="/docs">Docs</a>
+    </nav>
+    <h1>Upload Your Excel File</h1>    <form action="/upload-excel" enctype="multipart/form-data" method="post">
+        <div>
+            <label for="excel_file">Select Excel File:</label>
+            <input type="file" id="excel_file" name="excel_file" accept=".xls,.xlsx" required>
+        </div>
+        
+        <div class="sheet-container">
+            <label>School Sheet Names:</label>
+            <div id="schoolSheetContainer">
+                <div class="input-group">
+                    <input type="text" name="school_sheet_names" placeholder="Sheet name" required>
+                    <button type="button" class="remove-field" onclick="removeField(this)">✕</button>
+                </div>
+            </div>
+            <button type="button" onclick="addField('schoolSheetContainer', 'school_sheet_names')">Add School Sheet</button>
+        </div>
+        
+        <div class="sheet-container">
+            <label>Company Sheet Names:</label>
+            <div id="companySheetContainer">
+                <div class="input-group">
+                    <input type="text" name="company_sheet_names" placeholder="Sheet name" required>
+                    <button type="button" class="remove-field" onclick="removeField(this)">✕</button>
+                </div>
+            </div>
+            <button type="button" onclick="addField('companySheetContainer', 'company_sheet_names')">Add Company Sheet</button>
+        </div>
+        
+        <input type="submit" value="Upload">    </form>
+
+    <script>
+        function addField(containerId, fieldName) {
+            const container = document.getElementById(containerId);
+            const newField = document.createElement('div');
+            newField.className = 'input-group';
+            newField.innerHTML = `
+                <input type="text" name="${fieldName}" placeholder="Sheet name" required>
+                <button type="button" class="remove-field" onclick="removeField(this)">✕</button>
+            `;
+            container.appendChild(newField);
+        }
+
+        function removeField(button) {
+            const inputGroup = button.parentElement;
+            const container = inputGroup.parentElement;
+            
+            // Ensure we don't remove the last input field
+            if (container.children.length > 1) {
+                container.removeChild(inputGroup);
+            }
+        }
+    </script>
+</body>
+</html>
