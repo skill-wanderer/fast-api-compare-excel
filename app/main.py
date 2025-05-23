@@ -10,6 +10,7 @@ import numpy as np
 from app.utils import NpEncoder
 import openpyxl
 from openpyxl.styles import PatternFill, Font
+from app.utils import StringUtils
 
 app = FastAPI(title="FastAPI Compare Excel")
 
@@ -29,6 +30,10 @@ async def root(request: Request):
 @app.get("/upload")
 async def upload_page(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request, "page_title": "Upload Files"})
+
+@app.get("/guide")
+async def guide_page(request: Request):
+    return templates.TemplateResponse("guide.html", {"request": request, "page_title": "Hướng Dẫn"})
 
 @app.post("/upload-excel")
 async def upload_excel(
@@ -74,14 +79,14 @@ async def upload_excel(
                 if row["Họ tên"] is not None and pd.notna(row["Họ tên"]):
                     
                     row_data = {
-                        "fullName": str(row["Họ tên"] + " " + row["Tên"]).strip(),
-                        "Gender": str(row["Giới tính"]).strip(),
-                        "dob": str(row["Ngày sinh"]).strip(),
-                        "birthPlace": str(row["Nơi sinh"]).strip(),
+                        "fullName": StringUtils.normalize_spaces(str(row["Họ tên"] + " " + row["Tên"]).strip()),
+                        "Gender": StringUtils.normalize_spaces(str(row["Giới tính"]).strip()),
+                        "dob": StringUtils.normalize_spaces(str(row["Ngày sinh"]).strip()),
+                        "birthPlace": StringUtils.normalize_spaces(str(row["Nơi sinh"]).strip()),
                         # "phoneNumber": row["SĐT"].replace(" ", "") if pd.notna(row["SĐT"]) else None,
                         # "email": row["Email"],
-                        "certificate": str(certificate_value).strip(),
-                        "subject": str(row["Ngành"]).strip(),
+                        "certificate": StringUtils.normalize_spaces(str(certificate_value).strip()),
+                        "subject": StringUtils.normalize_spaces(str(row["Ngành"]).strip()),
                         "index": index,
                         "sheet_name": sheet,
                     }
@@ -116,14 +121,14 @@ async def upload_excel(
 
                     
                     row_data = {
-                        "fullName": str(row["Họ và tên"]).strip(),
-                        "Gender": str(row["Giới tính"]).strip(),
-                        "dob": str(row["Ngày sinh"]).strip(),
-                        "birthPlace": str(row["Nơi sinh"]).strip(),
+                        "fullName": StringUtils.normalize_spaces(str(row["Họ và tên"]).strip()),
+                        "Gender": StringUtils.normalize_spaces(str(row["Giới tính"]).strip()),
+                        "dob": StringUtils.normalize_spaces(str(row["Ngày sinh"]).strip()),
+                        "birthPlace": StringUtils.normalize_spaces(str(row["Nơi sinh"]).strip()),
                         # "phoneNumber": phone_value,
                         # "email": row["Email"],
-                        "certificate": str(certificate_value).strip(),
-                        "subject": str(row["Ngành ĐK"]).strip(),
+                        "certificate": StringUtils.normalize_spaces(str(certificate_value).strip()),
+                        "subject": StringUtils.normalize_spaces(str(row["Ngành ĐK"]).strip()),
                         "index": index,
                         "sheet_name": sheet,
                     }
@@ -149,14 +154,13 @@ async def upload_excel(
                         compare_col_index = cell.col_idx
                         break
                 else:
-                    # if the column does not exist then add it
-                    # find the last column
-                    last_col = ws.max_column + 1
-                    # if the first cell is empty then set the first cell to "Trạng thái đối chiếu"
-                    ws.cell(row=1, column=last_col, value="Trạng thái đối chiếu")
-                    ws.cell(row=1 , column=last_col).font = Font(bold=True)
-                    ws.cell(row=1 , column=last_col).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
-                    compare_col_index = last_col
+                    print("Column not found")
+                    continue
+            
+            
+            if compare_col_index is None:
+                    return {"error": "Column 'Trạng thái đối chiếu' not found in the sheet."}
+
 
             # add data for the new column
             for row_idx in range(2, ws.max_row + 1):
@@ -175,8 +179,20 @@ async def upload_excel(
                     match_found = len(match_company_records) > 0
 
                     if not match_found:
-                        ws.cell(row=row_idx, column=compare_col_index, value="Không tìm thấy")
-                        ws.cell(row=row_idx, column=compare_col_index).fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+                        # check if name exists in company_data
+                        name_exists = [ item for item in company_data
+                                       if str(item["fullName"]).lower() == str(current_row_data["fullName"]).lower()
+                        ]
+
+                        if name_exists:
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value=current_row_data["fullName"] + " Tồn tại nhưng không khớp ngày sinh " 
+                                    + str(current_row_data["dob"] ) + " != " +  " và ".join([str(item["dob"]) for item in name_exists]))
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+
+                        else:
+                            # check if name not exists in company_data
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value=current_row_data["fullName"] + " Không tìm thấy tên trong danh sách")
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
 
                     else:
 
@@ -190,8 +206,8 @@ async def upload_excel(
                                str(current_row_data["birthPlace"]).lower() == str(match_company_record["birthPlace"]).lower() and \
                                str(current_row_data["certificate"]).lower() == str(match_company_record["certificate"]).lower() and \
                                str(current_row_data["subject"]).lower() == str(match_company_record["subject"]).lower():
-                                ws.cell(row=row_idx, column=last_col, value="Tồn tại và khớp")
-                                ws.cell(row=row_idx, column=last_col).fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")  # Green for match
+                                ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Tồn tại và khớp")
+                                ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")  # Green for match
                             else:
                                 # loop through each field to check why not match and current value and company value
                                 not_match_fields = []
@@ -203,12 +219,97 @@ async def upload_excel(
                                     not_match_fields.append("Hệ TN: " + str(current_row_data["certificate"]) + " != " + str(match_company_record["certificate"]))
                                 if str(current_row_data["subject"]).lower() != str(match_company_record["subject"]).lower():
                                     not_match_fields.append("Ngành ĐK: " + str(current_row_data["subject"]) + " != " + str(match_company_record["subject"]))
-                                ws.cell(row=row_idx, column=last_col, value="Không khớp các trường: " + ", ".join(not_match_fields))
-                                ws.cell(row=row_idx, column=last_col).fill = PatternFill(start_color="FFA500", end_color="FFA500", fill_type="solid")  # Orange for not match
+                                ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Không khớp các trường: " + ", ".join(not_match_fields))
+                                ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FFA500", end_color="FFA500", fill_type="solid")  # Orange for not match
 
                         else:
-                            ws.cell(row=row_idx, column=last_col, value="Tồn tại nhiều bản ghi")
-                            ws.cell(row=row_idx, column=last_col).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid") # Yellow for multiple records
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Tồn tại nhiều bản ghi")
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid") # Yellow for multiple records
+
+    for sheet_name in company_sheet_names:
+        if sheet_name in wb.sheetnames:
+            ws = wb[sheet_name]
+            # find the index of the  "Trạng thái đối chiếu" column
+            # check if the column already exists
+            compare_col_index = None
+            for col in ws.iter_cols(min_row=1, max_row=1):
+                for cell in col:
+                    if cell.value == "Trạng thái đối chiếu":
+                        # if the column already exists then skip
+                        compare_col_index = cell.col_idx
+                        break
+                else:
+                    print("Column not found")
+                    continue
+            
+            
+            if compare_col_index is None:
+                    return {"error": "Column 'Trạng thái đối chiếu' not found in the sheet."}
+
+
+            # add data for the new column
+            for row_idx in range(1, ws.max_row + 1):
+                current_row_data = next(
+                    (item for item in company_data if item["index"] == row_idx - 1 and item["sheet_name"] == sheet_name),
+                    None
+                )
+                if current_row_data:
+                    # find the current row data exists in school_data
+                    match_school_records = [
+                        item for item in school_data
+                        if str(item["fullName"]).lower() == str(current_row_data["fullName"]).lower() and
+                        item["dob"] == current_row_data["dob"]
+                    ]
+
+                    match_found = len(match_school_records) > 0
+
+                    if not match_found:
+                        # check if name exists in school_data
+                        name_exists = [ item for item in school_data
+                                       if str(item["fullName"]).lower() == str(current_row_data["fullName"]).lower()
+                        ]
+
+                        if name_exists:
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value=current_row_data["fullName"] + " Tồn tại nhưng không khớp ngày sinh " 
+                                    + str(current_row_data["dob"] ) + " != " +  " và ".join([str(item["dob"]) for item in name_exists]))
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+
+                        else:
+                            # check if name not exists in school_data
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value=current_row_data["fullName"] + " Không tìm thấy tên trong danh sách")
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+
+                    else:
+
+
+                        # check if more than 1 record if more than 1 record then the cell value will be yellow color and have orginal value as "Tồn tại nhiều bản ghi"
+                        # if only 1 record then compare the other fields
+                        if len(match_school_records) == 1:
+                            match_school_record = match_school_records[0]
+                            # compare the other fields
+                            if str(current_row_data["Gender"]).lower() == str(match_school_record["Gender"]).lower() and \
+                               str(current_row_data["birthPlace"]).lower() == str(match_school_record["birthPlace"]).lower() and \
+                               str(current_row_data["certificate"]).lower() == str(match_school_record["certificate"]).lower() and \
+                               str(current_row_data["subject"]).lower() == str(match_school_record["subject"]).lower():
+                                ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Tồn tại và khớp")
+                                ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="00FF00", end_color="00FF00", fill_type="solid")  # Green for match
+                            else:
+                                # loop through each field to check why not match and current value and school value
+                                not_match_fields = []
+                                if str(current_row_data["Gender"]).lower() != str(match_school_record["Gender"]).lower():
+                                    not_match_fields.append("Giới tính: " + str(current_row_data["Gender"]) + " != " + str(match_school_record["Gender"]))
+                                if str(current_row_data["birthPlace"]).lower() != str(match_school_record["birthPlace"]).lower():
+                                    not_match_fields.append("Nơi sinh: " + str(current_row_data["birthPlace"]) + " != " + str(match_school_record["birthPlace"]))
+                                if str(current_row_data["certificate"]).lower() != str(match_school_record["certificate"]).lower():
+                                    not_match_fields.append("Hệ TN: " + str(current_row_data["certificate"]) + " != " + str(match_school_record["certificate"]))
+                                if str(current_row_data["subject"]).lower() != str(match_school_record["subject"]).lower():
+                                    not_match_fields.append("Ngành ĐK: " + str(current_row_data["subject"]) + " != " + str(match_school_record["subject"]))
+                                ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Không khớp các trường: " + ", ".join(not_match_fields))
+                                ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FFA500", end_color="FFA500", fill_type="solid")  # Orange for not match
+
+                        else:
+                            ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Tồn tại nhiều bản ghi")
+                            ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid") # Yellow for multiple records
 
     output = io.BytesIO()
     wb.save(output)

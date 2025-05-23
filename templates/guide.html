@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn - FastAPI So Sánh Excel</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        nav { 
+            background-color: #333;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            margin-bottom: 40px; 
+        }
+        nav a { 
+            margin-right: 15px; 
+            text-decoration: none; 
+            color: white; 
+            padding: 0.5em 1em;
+            border-radius: 4px;
+        }
+        nav a:hover { 
+            text-decoration: none; 
+            background-color: #555;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff5722;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #444;
+            margin-top: 25px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+        .section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .steps {
+            list-style-type: none;
+            counter-reset: step-counter;
+            padding-left: 0;
+        }
+        .steps li {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+            counter-increment: step-counter;
+        }
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: #ff5722;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+        }
+        .tip {
+            background-color: #fffbf2;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .warning {
+            background-color: #fff5f5;
+            border-left: 4px solid #ff5722;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .example-sheet {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+            overflow-x: auto;
+        }
+        .example-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .example-table th,
+        .example-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .example-table th {
+            background-color: #eee;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff5722;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #e64a19;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Trang Chủ</a>
+        <a href="/upload">Tải Tệp Lên</a>
+        <a href="/guide">Hướng Dẫn</a>
+        <a href="/docs">Tài Liệu</a>
+    </nav>
+    
+    <div class="container">
+        <h1>Hướng Dẫn Sử Dụng FastAPI So Sánh Excel</h1>
+        
+        <div class="section">
+            <h2>Tổng Quan</h2>
+            <p>
+                FastAPI So Sánh Excel là công cụ giúp bạn so sánh dữ liệu giữa các trang tính Excel khác nhau một cách hiệu quả. 
+                Ứng dụng này đặc biệt hữu ích khi bạn cần đối chiếu thông tin giữa dữ liệu trường học và dữ liệu từ các công ty.
+            </p>
+            <p>
+                Ứng dụng sẽ tự động phân tích, so sánh và đánh dấu các điểm khớp hoặc không khớp giữa các tập dữ liệu, 
+                giúp bạn tiết kiệm thời gian và giảm thiểu sai sót khi xử lý lượng lớn dữ liệu.
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2>Chuẩn Bị Tệp Excel</h2>
+            <p>
+                Để sử dụng ứng dụng hiệu quả nhất, tệp Excel của bạn cần được chuẩn bị theo định dạng sau:
+            </p>
+            
+            <h3>Yêu Cầu Đối Với Trang Tính Trường Học:</h3>
+            <p>Trang tính trường học cần có các cột sau:</p>
+            <div class="example-sheet">
+                <table class="example-table">
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Tên</th>
+                        <th>Giới tính</th>
+                        <th>Ngày sinh</th>
+                        <th>Nơi sinh</th>
+                        <th>SL</th>
+                        <th>Ngành</th>
+                        <th>Trạng thái đối chiếu</th>
+                    </tr>
+                    <tr>
+                        <td>Nguyễn Văn</td>
+                        <td>A</td>
+                        <td>Nam</td>
+                        <td>01/01/2000</td>
+                        <td>Hà Nội</td>
+                        <td>Đại học</td>
+                        <td>Công nghệ thông tin</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <h3>Yêu Cầu Đối Với Trang Tính Công Ty:</h3>
+            <p>Trang tính công ty cần có các cột sau:</p>
+            <div class="example-sheet">
+                <table class="example-table">
+                    <tr>
+                        <th>Họ và tên</th>
+                        <th>Giới tính</th>
+                        <th>Ngày sinh</th>
+                        <th>Nơi sinh</th>
+                        <th>Hệ TN</th>
+                        <th>Ngành ĐK</th>
+                        <th>Trạng thái đối chiếu</th>
+                    </tr>
+                    <tr>
+                        <td>Nguyễn Văn A</td>
+                        <td>Nam</td>
+                        <td>01/01/2000</td>
+                        <td>Hà Nội</td>
+                        <td>Đại học</td>
+                        <td>Công nghệ thông tin</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="tip">
+                <strong>Mẹo:</strong> Đảm bảo rằng có cột "Trạng thái đối chiếu" trong cả hai loại trang tính. 
+                Hệ thống sẽ sử dụng cột này để hiển thị kết quả so sánh.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Các Bước Sử Dụng</h2>
+            <ol class="steps">
+                <li>
+                    <strong>Truy cập vào trang tải tệp lên:</strong> Từ trang chính, nhấp vào nút "Bắt Đầu" hoặc 
+                    chọn "Tải Tệp Lên" từ menu điều hướng.
+                </li>
+                <li>
+                    <strong>Chọn tệp Excel cần so sánh:</strong> Nhấp vào "Chọn Tệp" và chọn tệp Excel của bạn từ 
+                    máy tính. Ứng dụng hỗ trợ các định dạng .xls và .xlsx.
+                </li>
+                <li>
+                    <strong>Xác định tên các trang tính:</strong> 
+                    <ul>
+                        <li>Nhập tên của (các) trang tính chứa dữ liệu trường học</li>
+                        <li>Nhập tên của (các) trang tính chứa dữ liệu công ty</li>
+                        <li>Nếu có nhiều trang tính, bạn có thể thêm bằng cách nhấp vào nút "Thêm Trang Tính"</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Tải lên và chờ xử lý:</strong> Nhấp vào nút "Tải Lên" và chờ ứng dụng xử lý dữ liệu.
+                </li>
+                <li>
+                    <strong>Tải xuống kết quả:</strong> Sau khi hoàn tất, tệp Excel mới với kết quả đối chiếu sẽ được tải xuống tự động.
+                </li>
+            </ol>
+            
+            <div class="warning">
+                <strong>Lưu ý quan trọng:</strong> Ứng dụng sẽ so khớp dữ liệu dựa trên họ tên và ngày sinh. 
+                Vui lòng đảm bảo thông tin này chính xác trên cả hai trang tính để có kết quả tốt nhất.
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Giải Thích Kết Quả</h2>
+            
+            <p>Sau khi quá trình đối chiếu hoàn tất, cột "Trạng thái đối chiếu" sẽ được cập nhật với một trong các trạng thái sau:</p>
+            
+            <h3>Đối Với Dữ Liệu Trường Học:</h3>
+            <ul>
+                <li><strong>Đã tìm thấy:</strong> Học sinh/sinh viên được tìm thấy trong dữ liệu công ty với thông tin khớp.</li>
+                <li><strong>Không tìm thấy:</strong> Học sinh/sinh viên không tồn tại trong dữ liệu công ty.</li>
+                <li><strong>Khớp một phần:</strong> Tìm thấy học sinh/sinh viên nhưng có một số thông tin không khớp (ví dụ: ngành học).</li>
+            </ul>
+            
+            <h3>Đối Với Dữ Liệu Công Ty:</h3>
+            <ul>
+                <li><strong>Đã xác nhận:</strong> Dữ liệu học sinh/sinh viên đã được xác nhận từ dữ liệu trường học.</li>
+                <li><strong>Không xác nhận:</strong> Không tìm thấy thông tin tương ứng trong dữ liệu trường học.</li>
+                <li><strong>Chứng chỉ không khớp:</strong> Tìm thấy học sinh/sinh viên nhưng thông tin chứng chỉ/bằng cấp không khớp.</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>Câu Hỏi Thường Gặp</h2>
+            
+            <h3>Tệp Excel của tôi có thể chứa bao nhiêu dữ liệu?</h3>
+            <p>
+                Ứng dụng được thiết kế để xử lý tệp Excel với kích thước vừa phải. Các tệp lên đến vài nghìn dòng 
+                thường sẽ được xử lý mà không gặp vấn đề. Đối với các tệp lớn hơn, thời gian xử lý có thể lâu hơn.
+            </p>
+            
+            <h3>Ứng dụng có thể xử lý định dạng ngày tháng khác nhau không?</h3>
+            <p>
+                Có, ứng dụng cố gắng nhận dạng và chuẩn hóa các định dạng ngày tháng phổ biến. Tuy nhiên, để đảm bảo 
+                độ chính xác cao nhất, chúng tôi khuyến nghị sử dụng định dạng ngày tháng nhất quán (ví dụ: DD/MM/YYYY) 
+                trong tất cả các trang tính.
+            </p>
+            
+            <h3>Làm thế nào để xử lý trường hợp tên người không khớp chính xác?</h3>
+            <p>
+                Ứng dụng sẽ chuẩn hóa tên người bằng cách loại bỏ khoảng trắng thừa và so sánh không phân biệt chữ hoa/chữ thường. 
+                Tuy nhiên, nếu tên người viết khác nhau đáng kể giữa các trang tính (ví dụ: Nguyễn Văn A so với NguyễnVăn A hoặc 
+                Nguyễn V. A), bạn có thể cần chỉnh sửa thủ công tệp Excel trước khi tải lên.
+            </p>
+        </div>
+        
+        <div class="section" style="text-align: center;">
+            <h2>Sẵn Sàng Để Bắt Đầu?</h2>
+            <p>
+                Bây giờ bạn đã biết cách sử dụng FastAPI So Sánh Excel, hãy bắt đầu tải tệp lên và trải nghiệm sự tiện lợi 
+                khi so sánh dữ liệu tự động!
+            </p>
+            <a href="/upload" class="btn">Tải Tệp Lên Ngay</a>
+        </div>
+    </div>
+</body>
+</html>
