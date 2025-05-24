@@ -1,5 +1,10 @@
 FROM python:3.12-slim
 
+# Set labels for container metadata
+LABEL org.opencontainers.image.source="https://github.com/yourusername/fast-api-compare-excel"
+LABEL org.opencontainers.image.description="FastAPI Excel Comparison Tool"
+LABEL org.opencontainers.image.licenses="MIT"
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

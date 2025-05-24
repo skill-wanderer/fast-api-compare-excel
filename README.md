@@ -141,6 +141,33 @@
 
 Đóng góp luôn được chào đón! Vui lòng đọc [hướng dẫn đóng góp](CONTRIBUTING.md) trước khi bắt đầu.
 
+## 🔄 CI/CD và Docker Images (CI/CD and Docker Images)
+
+Dự án này sử dụng GitHub Actions để tự động hóa quy trình CI/CD. Workflow bao gồm:
+
+- **Build và Push Docker Image**: Tự động xây dựng và đẩy Docker image cho cả kiến trúc x86-64 (amd64) và ARM64.
+- **Testing**: Thực hiện kiểm thử tự động khi có PR hoặc push vào nhánh chính.
+- **Security Scan**: Quét lỗ hổng bảo mật trên image sử dụng Trivy.
+
+### Sử dụng Docker Images (Using Docker Images)
+
+Bạn có thể kéo và sử dụng các image đa kiến trúc từ GitHub Container Registry:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/yourusername/fast-api-compare-excel:latest
+
+# Run the container
+docker run -p 8000:8000 ghcr.io/yourusername/fast-api-compare-excel:latest
+```
+
+Phiên bản sẽ tự động chọn image phù hợp với kiến trúc của hệ thống của bạn (amd64 hoặc arm64).
+
+### Badge Trang Thái (Status Badges)
+
+[![Build and Push Docker Images](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/docker-build.yml/badge.svg)](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/docker-build.yml)
+[![Test Build and Validate](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/test.yml/badge.svg)](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/test.yml)
+
 ## 📜 Giấy Phép (License)
 
 Dự án này được cấp phép theo Giấy Phép MIT - xem tệp [LICENSE](LICENSE) để biết chi tiết.
