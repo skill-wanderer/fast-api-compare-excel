@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-excel-compare
+  labels:
+    app: fast-api-excel-compare
+spec:
+  replicas: 1 # You can adjust the number of replicas
+  selector:
+    matchLabels:
+      app: fast-api-excel-compare
+  template:
+    metadata:
+      labels:
+        app: fast-api-excel-compare
+    spec:
+      containers:
+      - name: fast-api-excel-compare-container
+        # IMPORTANT: Replace with your actual image path from ghcr.io
+        image: ghcr.io/skill-wanderer/fast-api-compare-excel:latest
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: / # Your app's root endpoint
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: / # Your app's root endpoint
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        # Optional: Define resource requests and limits
+        # resources:
+        #   requests:
+        #     memory: "128Mi"
+        #     cpu: "250m"
+        #   limits:
+        #     memory: "256Mi"
+        #     cpu: "500m"

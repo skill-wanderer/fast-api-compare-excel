@@ -163,6 +163,90 @@ docker run -p 8000:8000 ghcr.io/yourusername/fast-api-compare-excel:latest
 
 Phiên bản sẽ tự động chọn image phù hợp với kiến trúc của hệ thống của bạn (amd64 hoặc arm64).
 
+## ☸️ Triển Khai Lên Kubernetes (Deploying to Kubernetes)
+
+Phần này hướng dẫn cách triển khai ứng dụng lên cụm Kubernetes. Các tệp cấu hình Kubernetes (Deployment, Service, Ingress) nằm trong thư mục `k8s/`.
+
+### Yêu Cầu (Prerequisites)
+
+- Một cụm Kubernetes đang hoạt động.
+- `kubectl` được cài đặt và cấu hình để giao tiếp với cụm của bạn.
+- Một Ingress controller (ví dụ: NGINX Ingress Controller) được cài đặt trong cụm nếu bạn muốn sử dụng Ingress.
+- Docker image của ứng dụng đã được build và đẩy lên một container registry (ví dụ: GHCR, Docker Hub). Workflow GitHub Actions trong dự án này đã tự động hóa việc này lên GHCR.
+
+### Cấu Hình (Configuration)
+
+1.  **Cập nhật Image trong Deployment**:
+    Mở tệp `k8s/deployment.yaml` và đảm bảo trường `spec.template.spec.containers[0].image` trỏ đến Docker image chính xác của bạn trên container registry. Ví dụ:
+    ```yaml
+    image: ghcr.io/yourusername/fast-api-compare-excel:latest
+    ```
+    Thay thế `yourusername` bằng tên người dùng hoặc tổ chức GitHub của bạn.
+
+2.  **Cấu hình Ingress (Tùy chọn)**:
+    Nếu bạn sử dụng Ingress để expose ứng dụng:
+    - Mở tệp `k8s/ingress.yaml`.
+    - Cập nhật trường `spec.rules[0].host` thành tên miền bạn muốn sử dụng. Ví dụ:
+      ```yaml
+      host: your-app-domain.com
+      ```
+    - Đảm bảo `spec.ingressClassName` phù hợp với Ingress controller bạn đang sử dụng (ví dụ: `nginx`).
+
+### Các Bước Triển Khai (Deployment Steps)
+
+1.  **Áp dụng Deployment**:
+    Triển khai Pods của ứng dụng lên cụm:
+    ```powershell
+    kubectl apply -f k8s/deployment.yaml
+    ```
+
+2.  **Áp dụng Service**:
+    Tạo Service để expose Deployment trong cụm:
+    ```powershell
+    kubectl apply -f k8s/service.yaml
+    ```
+    Service mặc định có type `LoadBalancer`. Nếu bạn đang chạy trên một môi trường không hỗ trợ LoadBalancer (ví dụ: Minikube cục bộ mà không có metallb), bạn có thể muốn đổi type thành `NodePort` hoặc `ClusterIP` (nếu chỉ truy cập qua Ingress).
+
+3.  **Áp dụng Ingress (Tùy chọn)**:
+    Nếu bạn đã cấu hình Ingress, hãy áp dụng nó:
+    ```powershell
+    kubectl apply -f k8s/ingress.yaml
+    ```
+
+### Kiểm Tra Trạng Thái (Verifying the Deployment)
+
+1.  **Kiểm tra Pods**:
+    ```powershell
+    kubectl get pods -l app=fast-api-excel-compare
+    ```
+    Đảm bảo các Pods đang ở trạng thái `Running`.
+
+2.  **Kiểm tra Service**:
+    ```powershell
+    kubectl get svc fast-api-excel-compare-svc
+    ```
+    Nếu Service type là `LoadBalancer`, bạn sẽ thấy một `EXTERNAL-IP` sau khi cloud provider cấp phát. Nếu là `NodePort`, bạn sẽ thấy port được expose trên các node.
+
+3.  **Kiểm tra Ingress (Nếu có)**:
+    ```powershell
+    kubectl get ingress fast-api-excel-compare-ingress
+    ```
+    Kiểm tra cột `ADDRESS` để xem địa chỉ IP hoặc hostname của Ingress.
+
+### Truy Cập Ứng Dụng (Accessing the Application)
+
+-   **Qua LoadBalancer/NodePort**: Nếu Service của bạn là `LoadBalancer`, truy cập bằng `EXTERNAL-IP` và port 80. Nếu là `NodePort`, truy cập bằng IP của một trong các node và `NodePort` được chỉ định.
+-   **Qua Ingress**: Truy cập ứng dụng thông qua tên miền bạn đã cấu hình trong `k8s/ingress.yaml` (ví dụ: `http://your-app-domain.com`).
+
+### Gỡ Bỏ (Cleaning Up)
+
+Để gỡ bỏ các tài nguyên đã triển khai:
+```powershell
+kubectl delete -f k8s/ingress.yaml # Nếu đã áp dụng
+kubectl delete -f k8s/service.yaml
+kubectl delete -f k8s/deployment.yaml
+```
+
 ### Badge Trang Thái (Status Badges)
 
 [![Build and Push Docker Images](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/docker-build.yml/badge.svg)](https://github.com/yourusername/fast-api-compare-excel/actions/workflows/docker-build.yml)
