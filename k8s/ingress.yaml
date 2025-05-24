@@ -9,12 +9,13 @@ metadata:
 spec:
   ingressClassName: nginx # Replaces the kubernetes.io/ingress.class annotation
   rules:
-  - host: your-app-domain.com
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: fast-api-excel-compare-svc
-            port:
-              number: 80
+    - host: your-app-domain.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: fast-api-excel-compare-svc
+              port:
+                number: 80
