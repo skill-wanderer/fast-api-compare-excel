@@ -256,10 +256,4 @@ kubectl delete -f k8s/deployment.yaml
 
 Dự án này được cấp phép theo Giấy Phép MIT - xem tệp [LICENSE](LICENSE) để biết chi tiết.
 
-## 📞 Liên Hệ (Contact)
 
-Nếu bạn có bất kỳ câu hỏi hoặc đề xuất nào, vui lòng tạo Issue hoặc liên hệ với chúng tôi tại example@email.com.
-
----
-
-© 2025 FastAPI So Sánh Excel. Đã đăng ký Bản quyền.

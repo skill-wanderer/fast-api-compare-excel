@@ -17,7 +17,7 @@ spec:
       containers:
       - name: fast-api-excel-compare-container
         # IMPORTANT: Replace with your actual image path from ghcr.io
-        image: ghcr.io/skill-wanderer/fast-api-compare-excel:latest
+        image: ghcr.io/yourusername/fast-api-compare-excel:latest
         ports:
         - containerPort: 8000
         readinessProbe:

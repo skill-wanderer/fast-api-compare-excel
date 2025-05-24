@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx # Replaces the kubernetes.io/ingress.class annotation
   rules:
-  - host: aum-excel.skill-wanderer.com 
+  - host: your-app-domain.com
       paths:
       - path: /
         pathType: Prefix
