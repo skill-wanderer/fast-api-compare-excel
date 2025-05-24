@@ -50,12 +50,69 @@
 
 ### Chạy Ứng Dụng (Running the Application)
 
-1. Khởi động ứng dụng FastAPI:
+1. Chạy ứng dụng FastAPI (Run the FastAPI app):
    ```bash
-   uvicorn app.main:app --reload
+   # Windows
+   python -m app.main
+   # hoặc
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-2. Mở trình duyệt web và truy cập [http://127.0.0.1:8000](http://127.0.0.1:8000)
+2. Truy cập ứng dụng tại (Access the app at):
+   ```
+   http://localhost:8000
+   ```
+
+### Sử Dụng Docker (Using Docker)
+
+1. Cài đặt Docker và Docker Compose (Install Docker and Docker Compose)
+
+2. Sao chép tệp môi trường (Copy the environment file):
+   ```powershell
+   # PowerShell
+   Copy-Item .env.example .env
+   ```
+
+3. Xây dựng và chạy container (Build and run the container):
+   ```powershell
+   # PowerShell
+   docker-compose up --build
+   ```
+
+   Hoặc sử dụng script trợ giúp (Or use the helper script):
+   ```powershell
+   # PowerShell
+   .\docker-helper.ps1 build
+
+   # CMD
+   .\docker-helper.bat build
+   ```
+
+4. Truy cập ứng dụng tại (Access the app at):
+   ```
+   http://localhost:8000
+   ```
+
+5. Quản lý container (Managing containers):
+   ```powershell
+   # PowerShell - Start containers
+   .\docker-helper.ps1 start
+
+   # PowerShell - View logs
+   .\docker-helper.ps1 logs
+
+   # PowerShell - Stop containers
+   .\docker-helper.ps1 stop
+
+   # CMD - Start containers
+   .\docker-helper.bat start
+
+   # CMD - View logs
+   .\docker-helper.bat logs
+
+   # CMD - Stop containers
+   .\docker-helper.bat stop
+   ```
 
 ## 📖 Cách Sử Dụng (Usage)
 
