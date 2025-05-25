@@ -249,7 +249,7 @@ kubectl delete -f k8s/deployment.yaml
 ### Badge Trang Thái (Status Badges)
 
 [![Build and Push Docker Images](https://github.com/skill-wanderer/fast-api-compare-excel/actions/workflows/docker-build.yml/badge.svg)](https://github.com/skill-wanderer/fast-api-compare-excel/actions/workflows/docker-build.yml)
-[![Test Build and Validate](https://github.com/skill-wanderer/fast-api-compare-excel/actions/workflows/test.yml/badge.svg)](https://github.com/skill-wanderer/fast-api-compare-excel/actions/workflows/test.yml)
+
 
 ## 📜 Giấy Phép (License)
 
