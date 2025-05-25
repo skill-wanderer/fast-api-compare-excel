@@ -8,7 +8,6 @@
 
 *A powerful web application using FastAPI for comparing data from Excel files. Supports multiple worksheets and provides visual tools to detect differences.*
 
-![Preview Screenshot](https://via.placeholder.com/800x450.png?text=FastAPI+Excel+Comparison+App)
 
 ## ✨ Tính Năng (Features)
 
