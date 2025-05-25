@@ -182,22 +182,22 @@
             <div class="example-sheet">
                 <table class="example-table">
                     <tr>
+                        <th>SL</th>
                         <th>Họ tên</th>
                         <th>Tên</th>
                         <th>Giới tính</th>
                         <th>Ngày sinh</th>
                         <th>Nơi sinh</th>
-                        <th>SL</th>
                         <th>Ngành</th>
                         <th>Trạng thái đối chiếu</th>
                     </tr>
                     <tr>
+                        <td>435</td>
                         <td>Nguyễn Văn</td>
                         <td>A</td>
                         <td>Nam</td>
                         <td>01/01/2000</td>
                         <td>Hà Nội</td>
-                        <td>Đại học</td>
                         <td>Công nghệ thông tin</td>
                         <td></td>
                     </tr>
@@ -232,6 +232,15 @@
             <div class="tip">
                 <strong>Mẹo:</strong> Đảm bảo rằng có cột "Trạng thái đối chiếu" trong cả hai loại trang tính. 
                 Hệ thống sẽ sử dụng cột này để hiển thị kết quả so sánh.
+            </div>
+
+            <div class="warning">
+                <strong>Quan trọng:</strong> 
+                <ul>
+                    <li><strong>Tiêu đề cột:</strong> Các tiêu đề cột trong tệp Excel của bạn <strong>phải khớp hoàn toàn</strong> với các tiêu đề được yêu cầu (ví dụ: "Họ tên", "Ngày sinh"). Đặc biệt lưu ý <strong>không được có dấu cách thừa</strong> ở đầu hoặc cuối tên cột.</li>
+                    <li><strong>Tên trang tính (Sheet names):</strong> Khi bạn nhập tên các trang tính vào ứng dụng, hãy đảm bảo chúng <strong>khớp chính xác</strong> với tên trang tính trong tệp Excel của bạn, bao gồm cả việc <strong>không có dấu cách thừa</strong>.</li>
+                </ul>
+                Việc không tuân thủ các yêu cầu này có thể dẫn đến lỗi xử lý hoặc kết quả so sánh không chính xác.
             </div>
         </div>
         

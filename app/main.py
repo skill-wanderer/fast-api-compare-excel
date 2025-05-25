@@ -57,8 +57,10 @@ async def upload_excel(
             df = pd.read_excel(io.BytesIO(contents), sheet_name=sheet)
             df = df.replace({np.nan: None})
 
+
             # loop thourgh each row and column
             for index, row in df.iterrows():
+                print(row)
 
                 if row["SL"] is not None and pd.notna(row["SL"]):
                     sl_value = str(row["SL"]).lower()
@@ -107,6 +109,7 @@ async def upload_excel(
 
 
             for index, row in df.iterrows():
+            
 
 
 
@@ -154,7 +157,6 @@ async def upload_excel(
                         compare_col_index = cell.col_idx
                         break
                 else:
-                    print("Column not found")
                     continue
             
             
@@ -226,6 +228,7 @@ async def upload_excel(
                             ws.cell(row=row_idx + 1, column=compare_col_index, value= current_row_data["fullName"] + " Tồn tại nhiều bản ghi")
                             ws.cell(row=row_idx + 1, column=compare_col_index).fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid") # Yellow for multiple records
 
+
     for sheet_name in company_sheet_names:
         if sheet_name in wb.sheetnames:
             ws = wb[sheet_name]
@@ -239,7 +242,6 @@ async def upload_excel(
                         compare_col_index = cell.col_idx
                         break
                 else:
-                    print("Column not found")
                     continue
             
             
@@ -318,7 +320,7 @@ async def upload_excel(
     response = StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={excel_file.filename}"}
+        headers={"Content-Disposition": f"attachment; filename={excel_file.filename+ '_modified.xlsx'}"}
     )
 
     return response
