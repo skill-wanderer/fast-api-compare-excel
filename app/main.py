@@ -11,6 +11,8 @@ from app.utils import NpEncoder
 import openpyxl
 from openpyxl.styles import PatternFill, Font
 from app.utils import StringUtils
+from urllib.parse import quote # Add this import
+
 
 app = FastAPI(title="FastAPI Compare Excel")
 
@@ -317,10 +319,13 @@ async def upload_excel(
     wb.save(output)
     output.seek(0)
     # Create a StreamingResponse to send the modified Excel file
+    original_filename = excel_file.filename.rsplit('.', 1)[0]
+    encoded_filename = quote(original_filename + '_modified.xlsx')
+
     response = StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={excel_file.filename+ '_modified.xlsx'}"}
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
     )
 
     return response
