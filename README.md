@@ -2,7 +2,7 @@
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0+-009688?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 Ứng dụng web mạnh mẽ sử dụng FastAPI để so sánh dữ liệu từ các tệp Excel. Hỗ trợ nhiều trang tính và cung cấp các công cụ trực quan để phát hiện sự khác biệt.
 
@@ -253,6 +253,6 @@ kubectl delete -f k8s/deployment.yaml
 
 ## 📜 Giấy Phép (License)
 
-Dự án này được cấp phép theo Giấy Phép MIT - xem tệp [LICENSE](LICENSE) để biết chi tiết.
+Dự án này được cấp phép theo Giấy Phép Apache 2.0 - xem tệp [LICENSE](LICENSE) để biết chi tiết.
 
 
